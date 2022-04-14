@@ -1,12 +1,11 @@
 import sys
-print(sys.version)
-import math
 import matplotlib.pyplot as plt
 import os
 from datetime import datetime
 import numpy as np
 
-########################################################################################################################
+print(sys.version)
+
 # important calculation parameters that affect the calculation accuracy and calculation time
 harmonic_limit = 5                      # calculating expansion coefficients up to +-n. Affects calculational time. but not linearly. Default value: 5
 phi_steps_phasespace = 900              # number of steps of 2phi = 180° RF-phases for the velocity calculations. Hardly affects calculation time. Default value: 900
