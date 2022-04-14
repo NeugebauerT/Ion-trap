@@ -277,7 +277,7 @@ for index_cutoff, cutoff in enumerate(LMCO_to_calculate):
             aPosition_max_frag = 0
             aVelocity_max_frag = 0
             phi_segments = 0
-            for phi in np.linspace(0, 180, phi_steps + 1):
+            for phi in np.linspace(0, 90, phi_steps + 1):
 
                 # using my approach for calculation
                 aPosition_frag = 0.0
