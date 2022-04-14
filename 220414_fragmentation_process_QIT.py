@@ -10,12 +10,12 @@ print(sys.version)
 # important calculation parameters that affect the calculation accuracy and calculation time
 harmonic_limit = 5                      # calculating expansion coefficients up to +-n. Affects calculational time. but not linearly. Default value: 5
 phi_steps_phasespace = 900              # number of steps of 2phi = 180° RF-phases for the velocity calculations. Hardly affects calculation time. Default value: 900
-number_mass_segments = 20              # number of datapoints per plot. Linearly affects calculation time. Default value: 100
+number_mass_segments = 50              # number of datapoints per plot. Linearly affects calculation time. Default value: 50
 phi_steps = 90                          # number of steps of 2phi = 180° RF-phases for the full calculation. Linearly affects calculation time. Default value: 90
 delta_prec_steps = 45                   # Number of steps, the precursor's underlying harmonic motion is split into per RF-phase. Linearly affects calculation time. Default value: 45
 
-LMCO_to_calculate = [27, 40]                # The Lowmass cutoff values in % calculated. Several values linearly affects calculational time. Default fragmentation LMCO 10 to 40.
-precursormass_to_calculate = [500, 2000]     # only important if Coulomb repulsion is included. Several values linearly affect calculation time. Default value: 2000 m/z
+LMCO_to_calculate = [16, 27, 40]                # The Lowmass cutoff values in % calculated. Several values linearly affects calculational time. Default fragmentation LMCO 10 to 40.
+precursormass_to_calculate = [2000]     # only important if Coulomb repulsion is included. Several values linearly affect calculation time. Default value: 2000 m/z
 coulomb_factor_segments = 0             # number of steps between 0 and 100% Coulomb repulsion used. Linearly affects calculation time. Default value: 0 (no Coulomb repulsion)
 
 
@@ -83,6 +83,9 @@ mass_gas_u = 4  # in u
 mass_gas = 4 / AVOGADRO  # in kg
 T_eff_prec_fragmentation = 700  # in K
 
+plt.rcParams.update({'font.family': 'Cambria'})
+plt.rcParams["mathtext.fontset"] = "cm"
+
 print("#" * 80)
 print(f"The used trap dimensions are: r0 = {r0:.3f} mm, z0 = {z0:.3f} mm and fRF = {fRF:.1f} kHz")
 print(f"Instrument temperature = {temp_instrument_C:.1f} °C or {temp_instrument:.1f} K")
@@ -112,7 +115,7 @@ for index_cutoff, cutoff in enumerate(LMCO_to_calculate):
     beta_prec = frequency(q=q_prec, a=a_prec)
 
     print("#" * 80)
-    print(f"Fragmentation low-mass cutoff = {LMCO}: q = {q_prec}, a = {a_prec} beta = {beta_prec}")
+    print(f"Fragmentation low-mass cutoff = {LMCO:.1f}%: q = {q_prec:.6f}, a = {a_prec:.6f} beta = {beta_prec:.6f}")
 
     exp_coeff = {"prec": {}, "frag": {}}
     sum_exp_coeff = {"prec": [], "frag": []}
@@ -469,7 +472,8 @@ print("#" * 80)
 
 ########################################################################################################################
 # saving calculations to file
-savefile_folder = "Coulomb_calculation_results/"
+directory = os.getcwd()
+savefile_folder = directory + "Coulomb_calculation_results/"
 file_extensions = [".txt", ".py"]
 while True:
     desired_save = input('Please choose the filename to where the results will be written: [type "QUIT" to quit] ')
@@ -566,12 +570,72 @@ for cutoff in summed_Coulomb_factors.keys():
 
                 # which graphs to plot
                 plt.plot(fragmassplot, lostplot, marker="o", markersize=4)
-                legend.append(coulomb_factor)
+                legend.append(f"{coulomb_factor*100:.1f}")
                 plt.plot(fragmassplot, coldplot, marker="o", markersize=4)
-                legend.append(coulomb_factor)
+                legend.append(f"{coulomb_factor*100:.1f}")
         plt.title(f"LMCO = {cutoff}%, Precursor m = {precursormass}u, lost% and cold%")
         plt.xlabel("Fragment mass (m/z)")
         plt.ylabel("Lost or Cold ions in %")
-        plt.legend(legend)
+        plt.legend(legend, title="Coulomb repulsion in %")
         plt.ylim(-5, 105)
+        plt.axvline(x=precursormass/charge_prec_z, color='gray', linestyle='dashed', linewidth=1)
+        plt.show()
+
+for cutoff in summed_Coulomb_factors.keys():
+    for precursormass in summed_Coulomb_factors[cutoff].keys():
+
+        # x-axis
+        fragmassplot = summed_Coulomb_factors[cutoff][precursormass]["masslist"]
+        legend = []
+        for coulomb_factor in summed_Coulomb_factors[cutoff][precursormass].keys():
+
+            # different y-axes
+            if coulomb_factor != "masslist":
+                maxTplot = summed_Coulomb_factors[cutoff][precursormass][coulomb_factor]["maxT"]
+                avgTplot = summed_Coulomb_factors[cutoff][precursormass][coulomb_factor]["avgT"]
+                minTplot = summed_Coulomb_factors[cutoff][precursormass][coulomb_factor]["minT"]
+                lostplot = summed_Coulomb_factors[cutoff][precursormass][coulomb_factor]["lost%"]
+                coldplot = summed_Coulomb_factors[cutoff][precursormass][coulomb_factor]["cold%"]
+                lostavgTplot = summed_Coulomb_factors[cutoff][precursormass][coulomb_factor]["lostavgT"]
+                trappedavgTplot = summed_Coulomb_factors[cutoff][precursormass][coulomb_factor]["trappedavgT"]
+                coldavgTplot = summed_Coulomb_factors[cutoff][precursormass][coulomb_factor]["coldavgT"]
+
+                # which graphs to plot
+                plt.plot(fragmassplot, avgTplot, marker="o", markersize=4)
+                legend.append(f"{coulomb_factor*100:.1f}")
+        plt.title(f"LMCO = {cutoff}%, Precursor m = {precursormass}u, avgT")
+        plt.xlabel("Fragment mass (m/z)")
+        plt.ylabel("average Fragmentation Factor T")
+        plt.legend(legend, title="Coulomb repulsion in %")
+        plt.ylim(0, 2.5)
+        plt.axvline(x=precursormass/charge_prec_z, color='gray', linestyle='dashed', linewidth=1)
+        plt.show()
+
+for cutoff in summed_Coulomb_factors.keys():
+    for precursormass in summed_Coulomb_factors[cutoff].keys():
+
+        # x-axis
+        fragmassplot = summed_Coulomb_factors[cutoff][precursormass]["masslist"]
+        legend = []
+        for coulomb_factor in summed_Coulomb_factors[cutoff][precursormass].keys():
+
+            # different y-axes
+            if coulomb_factor != "masslist":
+                maxTplot = summed_Coulomb_factors[cutoff][precursormass][coulomb_factor]["maxT"]
+                avgTplot = summed_Coulomb_factors[cutoff][precursormass][coulomb_factor]["avgT"]
+                minTplot = summed_Coulomb_factors[cutoff][precursormass][coulomb_factor]["minT"]
+                lostplot = summed_Coulomb_factors[cutoff][precursormass][coulomb_factor]["lost%"]
+                coldplot = summed_Coulomb_factors[cutoff][precursormass][coulomb_factor]["cold%"]
+                lostavgTplot = summed_Coulomb_factors[cutoff][precursormass][coulomb_factor]["lostavgT"]
+                trappedavgTplot = summed_Coulomb_factors[cutoff][precursormass][coulomb_factor]["trappedavgT"]
+                coldavgTplot = summed_Coulomb_factors[cutoff][precursormass][coulomb_factor]["coldavgT"]
+
+                # which graphs to plot
+                plt.plot(fragmassplot, trappedavgTplot, marker="o", markersize=4)
+                legend.append(f"{coulomb_factor*100:.1f}")
+        plt.title(f"LMCO = {cutoff}%, Precursor m = {precursormass}u, trappedavgTplot")
+        plt.xlabel("Fragment mass (m/z)")
+        plt.ylabel("average Fragmentation Factor T (lost ions)")
+        plt.legend(legend, title="Coulomb repulsion in %")
+        plt.axvline(x=precursormass/charge_prec_z, color='gray', linestyle='dashed', linewidth=1)
         plt.show()
