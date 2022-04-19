@@ -1,3 +1,9 @@
+""" This Python script performs the calculations described in the scientific article
+"Calculating the fragmentation process in quadrupole ion traps", T.S. Neugebauer
+and T. Drewello, accepted in the International Journal of Mass Spectrometry
+in February 2022.    
+"""
+
 import sys
 import matplotlib.pyplot as plt
 import os
@@ -30,12 +36,16 @@ def frequency(q: float, a: float = 0) -> float:
     beta_test = 0.5
     iteration = 0
     while True:
-        beta2 = (a + (q**2 / ((beta_test + 2)**2 - a - (q**2 / ((beta_test + 4)**2 - a -
-                      (q**2 / ((beta_test + 6)**2 - a - (q**2 / ((beta_test + 8)**2 - a -
-                       (q**2 / ((beta_test + 10)**2 - a)))))))))) +
-                     (q**2 / ((beta_test - 2)**2 - a - (q**2 / ((beta_test - 4)**2 - a -
-                      (q**2 / ((beta_test - 6)**2 - a - (q**2 / ((beta_test - 8)**2 - a -
-                       (q**2 / ((beta_test - 10)**2 - a))))))))))
+        beta2 = (a + (q**2 / ((beta_test + 2)**2 - a
+                      - (q**2 / ((beta_test + 4)**2 - a
+                       - (q**2 / ((beta_test + 6)**2 - a
+                        - (q**2 / ((beta_test + 8)**2 - a
+                         - (q**2 / ((beta_test + 10)**2 - a))))))))))
+                   + (q**2 / ((beta_test - 2)**2 - a
+                      - (q**2 / ((beta_test - 4)**2 - a
+                       - (q**2 / ((beta_test - 6)**2 - a
+                        - (q**2 / ((beta_test - 8)**2 - a
+                         - (q**2 / ((beta_test - 10)**2 - a))))))))))
                  )**0.5
         iteration += 1
         if abs((beta2 / beta_test - 1)) < 10**(-14) or beta2 == beta_test:
@@ -79,8 +89,8 @@ DELTA = 2
 # instrument information
 temp_instrument_C = 40.0  # in °C
 temp_instrument = temp_instrument_C + 273.15  # in K
-mass_gas_u = 4  # in u
-mass_gas = 4 / AVOGADRO  # in kg
+mass_gas_u = 4.0026  # in u
+mass_gas = mass_gas_u / AVOGADRO  # in kg
 T_eff_prec_fragmentation = 700  # in K
 
 plt.rcParams.update({'font.family': 'Cambria'})
@@ -124,20 +134,20 @@ for index_cutoff, cutoff in enumerate(LMCO_to_calculate):
     sum_exp_coeff[PREC] = [1.0, beta_prec, beta_prec**2]
     for n in range(harmonic_limit + 1):
         C = exp_coeff[PREC][n][0] * (- q_prec) / ((beta_prec + 2 * (n + 1))**2 - a_prec - (q_prec**2
-                                               / ((beta_prec + 2 * (n + 2))**2 - a_prec - (q_prec**2
-                                               / ((beta_prec + 2 * (n + 3))**2 - a_prec - (q_prec**2
-                                               / ((beta_prec + 2 * (n + 4))**2 - a_prec - (q_prec**2
-                                               / ((beta_prec + 2 * (n + 5))**2 - a_prec)))))))))
+                                                / ((beta_prec + 2 * (n + 2))**2 - a_prec - (q_prec**2
+                                                 / ((beta_prec + 2 * (n + 3))**2 - a_prec - (q_prec**2
+                                                  / ((beta_prec + 2 * (n + 4))**2 - a_prec - (q_prec**2
+                                                   / ((beta_prec + 2 * (n + 5))**2 - a_prec)))))))))
         exp_coeff[PREC][n + 1] = (C, C * (beta_prec + 2 * (n + 1)), C * (beta_prec + 2 * (n + 1))**2)
         sum_exp_coeff[PREC][C2N] += exp_coeff[PREC][n + 1][C2N]
         sum_exp_coeff[PREC][C2N_TIMES_FREQ] += exp_coeff[PREC][n + 1][C2N_TIMES_FREQ]
         sum_exp_coeff[PREC][C2N_TIMES_FREQSQUARED] += exp_coeff[PREC][n + 1][C2N_TIMES_FREQSQUARED]
     for n in range(0, -(harmonic_limit + 1), -1):
         C = exp_coeff[PREC][n][0] * (- q_prec) / ((beta_prec + 2 * (n - 1))**2 - a_prec - (q_prec**2
-                                               / ((beta_prec + 2 * (n - 2))**2 - a_prec - (q_prec**2
-                                               / ((beta_prec + 2 * (n - 3))**2 - a_prec - (q_prec**2
-                                               / ((beta_prec + 2 * (n - 4))**2 - a_prec - (q_prec**2
-                                               / ((beta_prec + 2 * (n - 5))**2 - a_prec)))))))))
+                                                / ((beta_prec + 2 * (n - 2))**2 - a_prec - (q_prec**2
+                                                 / ((beta_prec + 2 * (n - 3))**2 - a_prec - (q_prec**2
+                                                  / ((beta_prec + 2 * (n - 4))**2 - a_prec - (q_prec**2
+                                                   / ((beta_prec + 2 * (n - 5))**2 - a_prec)))))))))
         exp_coeff[PREC][n - 1] = (C, C * (beta_prec + 2 * (n - 1)), C * (beta_prec + 2 * (n - 1))**2)
         sum_exp_coeff[PREC][C2N] += exp_coeff[PREC][n - 1][C2N]
         sum_exp_coeff[PREC][C2N_TIMES_FREQ] += exp_coeff[PREC][n - 1][C2N_TIMES_FREQ]
@@ -488,8 +498,9 @@ while True:
     else:
         exist = False
         savefiles = []
+        date = datetime.now().strftime("%Y%m%d_%H%M%S")
         for extension in file_extensions:
-            filename_save = savefile_folder + desired_save.lower() + extension
+            filename_save = savefile_folder + date + "_" + desired_save.lower() + extension
             savefiles.append(filename_save)
         for file in savefiles:
             if os.path.exists(file):
