@@ -86,6 +86,7 @@ COUNT = 1
 VALUE = 0
 PHI = 1
 DELTA = 2
+
 # instrument information
 temp_instrument_C = 40.0  # in °C
 temp_instrument = temp_instrument_C + 273.15  # in K
@@ -118,14 +119,14 @@ for index_cutoff, cutoff in enumerate(LMCO_to_calculate):
 
     LMCO = cutoff  # in %
     qLMCO = 0.90804633
-    q_prec = LMCO / 100 * 0.90804633
+    q_prec = LMCO / 100 * qLMCO
     a_prec = 0
 
     # calculating secular frequency of precursor beta_prec
     beta_prec = frequency(q=q_prec, a=a_prec)
 
     print("#" * 80)
-    print(f"Fragmentation low-mass cutoff = {LMCO:.1f}%: q = {q_prec:.6f}, a = {a_prec:.6f} beta = {beta_prec:.6f}")
+    print(f"Fragmentation low-mass cutoff = {LMCO:.1f}%: q = {q_prec:.6f}, a = {a_prec:.6f}, beta = {beta_prec:.6f}")
 
     exp_coeff = {"prec": {}, "frag": {}}
     sum_exp_coeff = {"prec": [], "frag": []}
