@@ -389,31 +389,31 @@ for index_cutoff, cutoff in enumerate(LMCO_to_calculate):
                         uprec = 0
                         upprec = 0
                         for n in range(-harmonic_limit, harmonic_limit + 1, 1):
-                            uprec += exp_coeff[PREC][n][C2N] * np.cos((delta_prec + 2*n*phi) / 360 * 2*PI)
-                            upprec += -exp_coeff[PREC][n][C2N_TIMES_FREQ] * np.sin((delta_prec + 2*n*phi) / 360 * 2*PI)
+                            uprec += exp_coeff[PREC][n][C2N] * np.cos((delta_prec + 2*n*phi) / 360 * 2*PI)  # Eq. (31)
+                            upprec += -exp_coeff[PREC][n][C2N_TIMES_FREQ] * np.sin((delta_prec + 2*n*phi) / 360 * 2*PI)  # Eq. (32)
                             if delta_prec == 0:
-                                u1_frag += exp_coeff[FRAG][n][C2N]\
+                                u1_frag += exp_coeff[FRAG][n][C2N]\  # Eq. (12)
                                            * np.cos((beta_frag + 2 * n) * phi / 360 * 2*PI)
-                                u2_frag += exp_coeff[FRAG][n][C2N]\
+                                u2_frag += exp_coeff[FRAG][n][C2N]\  # Eq. (13)
                                            * np.sin((beta_frag + 2 * n) * phi / 360 * 2*PI)
-                                up1_frag += -exp_coeff[FRAG][n][C2N_TIMES_FREQ]\
+                                up1_frag += -exp_coeff[FRAG][n][C2N_TIMES_FREQ]\  # Eq. (14)
                                             * np.sin((beta_frag + 2 * n) * phi / 360 * 2*PI)
-                                up2_frag += exp_coeff[FRAG][n][C2N_TIMES_FREQ]\
+                                up2_frag += exp_coeff[FRAG][n][C2N_TIMES_FREQ]\  # Eq. (15)
                                             * np.cos((beta_frag + 2 * n) * phi / 360 * 2*PI)
-                        u_frag = u1_frag + u2_frag
-                        up_frag = up1_frag + up2_frag
+                        u_frag = u1_frag + u2_frag  # Eq. (10)
+                        up_frag = up1_frag + up2_frag  # Eq. (11)
                         if mass_frag <= mass_prec:
-                            alpha1_frag = (uprec * up2_frag - (upprec + coulomb_factor * up_Coulomb_light) * u2_frag)\
-                                          / (sum_exp_coeff[FRAG][C2N] * sum_exp_coeff[FRAG][C2N_TIMES_FREQ])
-                            alpha2_frag = (u1_frag * (upprec + coulomb_factor * up_Coulomb_light) - up1_frag * uprec)\
-                                          / (sum_exp_coeff[FRAG][C2N] * sum_exp_coeff[FRAG][C2N_TIMES_FREQ])
+                            alpha1_frag = ((uprec * up2_frag - (upprec + coulomb_factor * up_Coulomb_light) * u2_frag)  # Eq. (16)
+                                          / (sum_exp_coeff[FRAG][C2N] * sum_exp_coeff[FRAG][C2N_TIMES_FREQ]))
+                            alpha2_frag = ((u1_frag * (upprec + coulomb_factor * up_Coulomb_light) - up1_frag * uprec)  # Eq. (17)
+                                          / (sum_exp_coeff[FRAG][C2N] * sum_exp_coeff[FRAG][C2N_TIMES_FREQ]))
                             T_CS = (alpha1_frag**2 + alpha2_frag**2)**0.5 * umax_frag / umax_prec
                         else:
-                            alpha1_frag = ((uprec * up2_frag - (upprec + coulomb_factor * up_Coulomb_heavy) * u2_frag)
+                            alpha1_frag = ((uprec * up2_frag - (upprec + coulomb_factor * up_Coulomb_heavy) * u2_frag)  # Eq. (16)
                                            / (sum_exp_coeff[FRAG][C2N] * sum_exp_coeff[FRAG][C2N_TIMES_FREQ]))
-                            alpha2_frag = ((u1_frag * (upprec + coulomb_factor * up_Coulomb_heavy) - up1_frag * uprec)
+                            alpha2_frag = ((u1_frag * (upprec + coulomb_factor * up_Coulomb_heavy) - up1_frag * uprec)  # Eq. (17)
                                            / (sum_exp_coeff[FRAG][C2N] * sum_exp_coeff[FRAG][C2N_TIMES_FREQ]))
-                            T_CS = (alpha1_frag**2 + alpha2_frag**2)**0.5 * umax_frag / umax_prec
+                            T_CS = (alpha1_frag**2 + alpha2_frag**2)**0.5 * umax_frag / umax_prec  # Eq. (40)
 
                         # writing the results in the corresponding result list
                         if T_CS > fragmentation_factors[cutoff][precursormass][fragmentmass][coulomb_factor][MAX][VALUE]:
@@ -662,7 +662,7 @@ for cutoff in summed_Coulomb_factors.keys():
                   f"{z0_text} = {z0:.2f} mm, {fRF_text} = {fRF} kHz, {zfrag_text} = {zmax_prec_fragmentation:.2f} mm\n"
                   f"{Teff_text} = {T_eff_prec_fragmentation} K")
         plt.xlabel("Fragment mass (m/z)")
-        plt.ylabel("average Fragmentation Factor T (lost ions)")
+        plt.ylabel("average Fragmentation Factor T (only trapped ions)")
         plt.legend(legend, title="Coulomb repulsion in %")
         plt.axvline(x=precursormass/charge_prec_z, color="gray", linestyle="dashed", linewidth=1)
         plt.show()
