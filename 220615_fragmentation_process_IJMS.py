@@ -392,27 +392,27 @@ for index_cutoff, cutoff in enumerate(LMCO_to_calculate):
                             uprec += exp_coeff[PREC][n][C2N] * np.cos((delta_prec + 2*n*phi) / 360 * 2*PI)  # Eq. (31)
                             upprec += -exp_coeff[PREC][n][C2N_TIMES_FREQ] * np.sin((delta_prec + 2*n*phi) / 360 * 2*PI)  # Eq. (32)
                             if delta_prec == 0:
-                                u1_frag += exp_coeff[FRAG][n][C2N]\  # Eq. (12)
-                                           * np.cos((beta_frag + 2 * n) * phi / 360 * 2*PI)
-                                u2_frag += exp_coeff[FRAG][n][C2N]\  # Eq. (13)
-                                           * np.sin((beta_frag + 2 * n) * phi / 360 * 2*PI)
-                                up1_frag += -exp_coeff[FRAG][n][C2N_TIMES_FREQ]\  # Eq. (14)
-                                            * np.sin((beta_frag + 2 * n) * phi / 360 * 2*PI)
-                                up2_frag += exp_coeff[FRAG][n][C2N_TIMES_FREQ]\  # Eq. (15)
-                                            * np.cos((beta_frag + 2 * n) * phi / 360 * 2*PI)
+                                u1_frag += exp_coeff[FRAG][n][C2N]\
+                                           * np.cos((beta_frag + 2 * n) * phi / 360 * 2*PI)  # Eq. (12)
+                                u2_frag += exp_coeff[FRAG][n][C2N]\
+                                           * np.sin((beta_frag + 2 * n) * phi / 360 * 2*PI)  # Eq. (13)
+                                up1_frag += -exp_coeff[FRAG][n][C2N_TIMES_FREQ]\
+                                            * np.sin((beta_frag + 2 * n) * phi / 360 * 2*PI)  # Eq. (14)
+                                up2_frag += exp_coeff[FRAG][n][C2N_TIMES_FREQ]\
+                                            * np.cos((beta_frag + 2 * n) * phi / 360 * 2*PI)  # Eq. (15)
                         u_frag = u1_frag + u2_frag  # Eq. (10)
                         up_frag = up1_frag + up2_frag  # Eq. (11)
                         if mass_frag <= mass_prec:
-                            alpha1_frag = ((uprec * up2_frag - (upprec + coulomb_factor * up_Coulomb_light) * u2_frag)  # Eq. (16)
-                                          / (sum_exp_coeff[FRAG][C2N] * sum_exp_coeff[FRAG][C2N_TIMES_FREQ]))
-                            alpha2_frag = ((u1_frag * (upprec + coulomb_factor * up_Coulomb_light) - up1_frag * uprec)  # Eq. (17)
-                                          / (sum_exp_coeff[FRAG][C2N] * sum_exp_coeff[FRAG][C2N_TIMES_FREQ]))
+                            alpha1_frag = ((uprec * up2_frag - (upprec + coulomb_factor * up_Coulomb_light) * u2_frag)
+                                          / (sum_exp_coeff[FRAG][C2N] * sum_exp_coeff[FRAG][C2N_TIMES_FREQ]))  # Eq. (16)
+                            alpha2_frag = ((u1_frag * (upprec + coulomb_factor * up_Coulomb_light) - up1_frag * uprec)
+                                          / (sum_exp_coeff[FRAG][C2N] * sum_exp_coeff[FRAG][C2N_TIMES_FREQ]))  # Eq. (17)
                             T_CS = (alpha1_frag**2 + alpha2_frag**2)**0.5 * umax_frag / umax_prec
                         else:
-                            alpha1_frag = ((uprec * up2_frag - (upprec + coulomb_factor * up_Coulomb_heavy) * u2_frag)  # Eq. (16)
-                                           / (sum_exp_coeff[FRAG][C2N] * sum_exp_coeff[FRAG][C2N_TIMES_FREQ]))
-                            alpha2_frag = ((u1_frag * (upprec + coulomb_factor * up_Coulomb_heavy) - up1_frag * uprec)  # Eq. (17)
-                                           / (sum_exp_coeff[FRAG][C2N] * sum_exp_coeff[FRAG][C2N_TIMES_FREQ]))
+                            alpha1_frag = ((uprec * up2_frag - (upprec + coulomb_factor * up_Coulomb_heavy) * u2_frag)
+                                           / (sum_exp_coeff[FRAG][C2N] * sum_exp_coeff[FRAG][C2N_TIMES_FREQ]))  # Eq. (16)
+                            alpha2_frag = ((u1_frag * (upprec + coulomb_factor * up_Coulomb_heavy) - up1_frag * uprec)
+                                           / (sum_exp_coeff[FRAG][C2N] * sum_exp_coeff[FRAG][C2N_TIMES_FREQ]))  # Eq. (17)
                             T_CS = (alpha1_frag**2 + alpha2_frag**2)**0.5 * umax_frag / umax_prec  # Eq. (40)
 
                         # writing the results in the corresponding result list
